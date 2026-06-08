@@ -9,11 +9,8 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { ErrorMessage, SuccessMessages } from "../components/messages";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  GoogleLogin,
-  useGoogleLogin,
-  useGoogleOneTapLogin,
-} from "@react-oauth/google";
+import { auth, googleProvider } from "../config/firebase";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; 
 export function LoginFormDemo() {
   const navigate = useNavigate();
@@ -28,51 +25,49 @@ export function LoginFormDemo() {
   useEffect(() => {
     document.title = "First time? Signup here";
   }, []);
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-        
-    //   const userInfo = await axios
-    //     .get("https://www.googleapis.com/oauth2/v3/userinfo", {
-    //       headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-    //     })
-        // .then((res) => res.data);
-        // console.log({tokenResponse})
-    //   console.log({userInfo});
-      try {
-        console.log(tokenResponse.access_token)
-        const response = await axios.post(
-          `${apiBaseUrl}/auth/google`,{ params: { access_token: tokenResponse.access_token } }
-        );
-        console.log(response);
+  const handleGoogleLogin = async () => {
+    console.log("Google login button clicked");
+    try {
+      console.log("Starting Firebase signInWithPopup...");
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Firebase popup result:", result);
+      
+      const user = result.user;
+      console.log("Firebase user:", user);
+      
+      // Get Firebase ID token
+      const idToken = await user.getIdToken();
+      console.log("Got Firebase ID token");
+      
+      // Send Firebase token to backend
+      console.log("Sending request to backend...");
+      const response = await axios.post(
+        `${apiBaseUrl}/auth/firebase`,
+        {
+          idToken,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL
+        }
+      );
+
+      console.log("Backend response:", response.data);
+      
+      if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.userInfo._id));
+        localStorage.setItem("user", JSON.stringify(response.data.user._id));
         setSuccess(true);
         setTimeout(() => setSuccess(false), 2500);
         navigate("/home");
-        // setTimeout(() => navigate("/home"), 3000);
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-        setError(true);
-        setErrorMsg(err?.response?.data.message);
-        setTimeout(() => setError(false), 7000);
-        setTimeout(() => setErrorMsg(""), 7000);
-        setError(false);
-        setLoading(false);
       }
-    },
-    onError: (err) => {
-        setError(true);
-        console.log(err)
-            setErrorMsg(err?.response?.data.message);
-            setTimeout(() => setError(false), 7000)
-            setTimeout(() => setErrorMsg(""), 7000)
-            setError(false)
-            setLoading(false);
-            console.log(error)
-    },
-    flow: "implicit", // Change to implicit flow
-  });
+    } catch (error) {
+      console.error("Firebase Google login error:", error);
+      console.error("Error details:", error.code, error.message);
+      setError(true);
+      setErrorMsg(error.message || "Google login failed. Please try again.");
+      setTimeout(() => setError(false), 3000);
+    }
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -96,7 +91,7 @@ export function LoginFormDemo() {
       setLoading(false);
     }
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     for (let key in formData) {
       if (formData[key] === "") {
@@ -104,36 +99,40 @@ export function LoginFormDemo() {
         return;
       }
     }
-    console.log(formData);
-    // if(formData || !formData){
-    //     return;
-    // }
+    
     setLoading(true);
-    axios
-      .post( `${apiBaseUrl}/users/login`, formData)
-      .then((res) => {
-        console.log(res);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user._id));
-        console.log(res.data);
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 2500);
-        setLoading(false);
-        setTimeout(() => navigate("/home"), 3000);
-        // navigate("/login");
-      })
-      .catch((err) => {
-        console.log("error cae :", err);
-        setError(true);
-        setErrorMsg(err.response.data.message);
-        setTimeout(() => setError(false), 7000);
-        setTimeout(() => setErrorMsg(""), 7000);
-
-        // setError(false)
-        setLoading(false);
+    
+    try {
+      // Sign in with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(
+        auth, 
+        formData.email, 
+        formData.password
+      );
+      
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+      
+      // Send Firebase token to backend
+      const response = await axios.post(`${apiBaseUrl}/auth/firebase`, {
+        idToken,
+        email: user.email,
+        name: user.displayName
       });
 
-    console.log("Form submitted");
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user._id));
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2500);
+      setTimeout(() => navigate("/home"), 3000);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(true);
+      setErrorMsg(error.message || "Login failed. Please try again.");
+      setTimeout(() => setError(false), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -212,7 +211,7 @@ export function LoginFormDemo() {
               <button
                 className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium  bg-zinc-900 shadow-[0px_0px_1px_1px_var(--neutral-800)]"
                 type="button"
-                onClick={() => login()}
+                onClick={handleGoogleLogin}
               >
                 <IconBrandGoogle className="h-4 w-4 text-neutral-300" />
                 <span className="text-neutral-300 text-sm">Google</span>

@@ -13,6 +13,7 @@ import Dashboard from './views/Dashboard'
 import BlogsPage from './views/BlogsPage'
 import SingleBlogPage from './views/SingleBlogPage'
 import UserProfile from './views/UserProfile'
+import Preparation from './views/Preparation'
 import { useNavigate } from 'react-router-dom'
 export default function GlobalRoute() {
     return (
@@ -25,6 +26,7 @@ export default function GlobalRoute() {
                 <Route path="/home" element={<App />} />
                 <Route path="/profile" element={<Dashboard />} />
                 <Route path="/contest" element={<Contests />} />
+                <Route path="/preparation" element={<Preparation />} />
                 <Route path="/login" element={<LoginFormDemo />} />
                 <Route path="/signin" element={<SigninPage />} />
                 <Route path="/blogs" element={<BlogsPage />} >

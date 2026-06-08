@@ -1,12 +1,7 @@
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("../config/cloudinary");
 const fs=require('fs');
 const express = require('express');
 const router = express.Router();
-cloudinary.config({
-    cloud_name: 'drixlrait',
-    api_key: '678145639584449',
-    api_secret: 'd0KOadtoLkhLM3T4z4-ZA_kyNdg'
-});
 
 const uploadOnCloudnary=async (localPath, folder)=>{
     try {

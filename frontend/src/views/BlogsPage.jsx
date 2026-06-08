@@ -50,7 +50,7 @@ function BlogsPage() {
     const [searchParams] = useSearchParams()
     if (searchParams.get('id')) return <SingleBlogPage />
     return (
-        <div className="pt-10">
+        <div className="pt-20">
             <h1 className="text-3xl md:text-7xl font-bold text-white mx-10 md:mx-32 mt-20 md:mt-16">Daily Blogs</h1>
             <h1 className="text-lg md:text-3xl text-gray-400  mx-10 md:mx-32 mt-2 md:mt-5 ">
                 Explore our blog: your coding corner with practical tips, breakthrough trends, and inspiring discussions. Grow your skills, share your voice, and design your tech future.

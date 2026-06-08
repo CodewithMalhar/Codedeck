@@ -1,0 +1,385 @@
+{
+    "topics": [{
+            "name": "Arrays",
+            "summary": "Learn about array traversal, rotation, searching, and sorting techniques.",
+            "problems": [{
+                    "title": "Two Sum",
+                    "difficulty": "Easy",
+                    "approach": "Use a hash map to store complements. For each element, check if its complement exists in the map.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=KLlXCFG5TnA"
+                },
+                {
+                    "title": "Maximum Subarray",
+                    "difficulty": "Medium",
+                    "approach": "Apply Kadane's Algorithm: track current sum and max sum. Reset current sum if it becomes negative.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=86CQq3pKSUw"
+                },
+                {
+                    "title": "Merge Intervals",
+                    "difficulty": "Medium",
+                    "approach": "Sort intervals by start time. Merge overlapping intervals by comparing end times.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=44H3cEC2fFM"
+                }
+            ]
+        },
+        {
+            "name": "Strings",
+            "summary": "Master string manipulation, pattern matching, and substring problems.",
+            "problems": [{
+                    "title": "Valid Anagram",
+                    "difficulty": "Easy",
+                    "approach": "Use frequency counter or sort both strings. Compare character counts or sorted versions.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=9UtInBqnCgA"
+                },
+                {
+                    "title": "Longest Substring Without Repeating Characters",
+                    "difficulty": "Medium",
+                    "approach": "Use sliding window with a hash set. Expand window and shrink when duplicates found.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=wiGpQwVHdE0"
+                },
+                {
+                    "title": "Minimum Window Substring",
+                    "difficulty": "Hard",
+                    "approach": "Use two pointers and frequency map. Expand right, contract left when valid window found.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=jSto0O4AJbM"
+                }
+            ]
+        },
+        {
+            "name": "Linked Lists",
+            "summary": "Understand pointer manipulation, reversal, and cycle detection in linked lists.",
+            "problems": [{
+                    "title": "Reverse Linked List",
+                    "difficulty": "Easy",
+                    "approach": "Use three pointers: prev, current, next. Iteratively reverse links while traversing.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=G0_I-ZF0S38"
+                },
+                {
+                    "title": "Merge Two Sorted Lists",
+                    "difficulty": "Easy",
+                    "approach": "Use dummy node and compare values. Link smaller node and advance pointers.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=XIdigk956u0"
+                },
+                {
+                    "title": "LRU Cache",
+                    "difficulty": "Hard",
+                    "approach": "Combine hash map with doubly linked list. Map for O(1) access, list for LRU order.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=7ABFKPK2hD4"
+                }
+            ]
+        },
+        {
+            "name": "Trees",
+            "summary": "Explore tree traversals, BST operations, and tree construction problems.",
+            "problems": [{
+                    "title": "Binary Tree Inorder Traversal",
+                    "difficulty": "Easy",
+                    "approach": "Use recursion or stack. Visit left subtree, process node, then right subtree.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=g_S5WuasWUE"
+                },
+                {
+                    "title": "Validate Binary Search Tree",
+                    "difficulty": "Medium",
+                    "approach": "Use recursion with min/max bounds. Ensure each node's value is within valid range.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=s6ATEkipzow"
+                },
+                {
+                    "title": "Binary Tree Maximum Path Sum",
+                    "difficulty": "Hard",
+                    "approach": "Use post-order DFS. Track max path through each node, update global maximum.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=Hr5cWUld4vU"
+                }
+            ]
+        },
+        {
+            "name": "Graphs",
+            "summary": "Learn graph traversal algorithms, shortest paths, and cycle detection.",
+            "problems": [{
+                    "title": "Number of Islands",
+                    "difficulty": "Medium",
+                    "approach": "Use DFS or BFS to mark connected components. Count each new island found.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=pV2kpPD66nE"
+                },
+                {
+                    "title": "Course Schedule",
+                    "difficulty": "Medium",
+                    "approach": "Detect cycle in directed graph using DFS with color marking or topological sort.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=EgI5nU9etnU"
+                },
+                {
+                    "title": "Word Ladder",
+                    "difficulty": "Hard",
+                    "approach": "Use BFS to find shortest transformation. Generate neighbors by changing one letter.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=h9iTnkgv05E"
+                }
+            ]
+        },
+        {
+            "name": "Dynamic Programming",
+            "summary": "Solve complex problems efficiently by breaking them into overlapping subproblems.",
+            "problems": [{
+                    "title": "Climbing Stairs",
+                    "difficulty": "Easy",
+                    "approach": "Use Fibonacci pattern. dp[i] = dp[i-1] + dp[i-2]. Can optimize to O(1) space.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=Y0lT9Fck7qI"
+                },
+                {
+                    "title": "Longest Increasing Subsequence",
+                    "difficulty": "Medium",
+                    "approach": "Use DP array where dp[i] = max length ending at i. Or use binary search for O(n log n).",
+                    "youtubeLink": "https://www.youtube.com/watch?v=cjWnW0hdF1Y"
+                },
+                {
+                    "title": "Edit Distance",
+                    "difficulty": "Hard",
+                    "approach": "Build 2D DP table. Consider insert, delete, replace operations. Take minimum cost.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=XYi2-LPrwm4"
+                }
+            ]
+        },
+        {
+            "name": "Recursion",
+            "summary": "Master recursive thinking and backtracking techniques.",
+            "problems": [{
+                    "title": "Fibonacci Number",
+                    "difficulty": "Easy",
+                    "approach": "Base cases: F(0)=0, F(1)=1. Recursive: F(n) = F(n-1) + F(n-2). Use memoization.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=oBt53YbR9Kk"
+                },
+                {
+                    "title": "Permutations",
+                    "difficulty": "Medium",
+                    "approach": "Use backtracking. Swap elements, recurse, then backtrack. Track used elements.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=s7AvT7cGdSo"
+                },
+                {
+                    "title": "N-Queens",
+                    "difficulty": "Hard",
+                    "approach": "Backtrack row by row. Check column, diagonal conflicts. Place queen if safe.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=Ph95IHmRp5M"
+                }
+            ]
+        },
+        {
+            "name": "Greedy",
+            "summary": "Learn to make locally optimal choices to find global solutions.",
+            "problems": [{
+                    "title": "Best Time to Buy and Sell Stock",
+                    "difficulty": "Easy",
+                    "approach": "Track minimum price seen. Calculate max profit at each step.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=1pkOgXD63yU"
+                },
+                {
+                    "title": "Jump Game",
+                    "difficulty": "Medium",
+                    "approach": "Track farthest reachable position. Update at each step, check if goal reachable.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=Yan0cv2cLy8"
+                },
+                {
+                    "title": "Gas Station",
+                    "difficulty": "Medium",
+                    "approach": "Track total gas and current tank. Reset start when tank goes negative.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=lJwbPZGo05A"
+                }
+            ]
+        },
+        {
+            "name": "Sorting & Searching",
+            "summary": "Master various sorting algorithms and binary search techniques.",
+            "problems": [{
+                    "title": "Binary Search",
+                    "difficulty": "Easy",
+                    "approach": "Use two pointers (left, right). Compare mid with target, adjust search space.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=s4DPM8ct1pI"
+                },
+                {
+                    "title": "Search in Rotated Sorted Array",
+                    "difficulty": "Medium",
+                    "approach": "Modified binary search. Identify sorted half, check if target is in that range.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=U8XENwh8Hag"
+                },
+                {
+                    "title": "Median of Two Sorted Arrays",
+                    "difficulty": "Hard",
+                    "approach": "Binary search on smaller array. Partition both arrays to find median position.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=q6IEA26hvXc"
+                }
+            ]
+        },
+        {
+            "name": "Bit Manipulation",
+            "summary": "Understand bitwise operations and their applications in problem-solving.",
+            "problems": [{
+                    "title": "Single Number",
+                    "difficulty": "Easy",
+                    "approach": "Use XOR operation. XOR all numbers - duplicates cancel out, leaving single number.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=qMPX1AOa83k"
+                },
+                {
+                    "title": "Number of 1 Bits",
+                    "difficulty": "Easy",
+                    "approach": "Use n & (n-1) to remove rightmost 1 bit. Count iterations until n becomes 0.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=5Km3utixwZs"
+                },
+                {
+                    "title": "Maximum XOR of Two Numbers in an Array",
+                    "difficulty": "Medium",
+                    "approach": "Build Trie of binary representations. For each number, find maximum XOR path.",
+                    "youtubeLink": "https://www.youtube.com/watch?v=jCuNuzRMFYc"
+                }
+            ]
+        }
+    ],
+    "mockContests": [{
+            "id": 1,
+            "name": "Weekly Challenge #42",
+            "duration": "90 minutes",
+            "difficulty": "Medium",
+            "problems": 4,
+            "participants": 1250
+        },
+        {
+            "id": 2,
+            "name": "Sprint Contest - Easy",
+            "duration": "60 minutes",
+            "difficulty": "Easy",
+            "problems": 3,
+            "participants": 2100
+        },
+        {
+            "id": 3,
+            "name": "Advanced DSA Marathon",
+            "duration": "180 minutes",
+            "difficulty": "Hard",
+            "problems": 6,
+            "participants": 450
+        }
+    ],
+    "hackathonIdeas": [{
+            "title": "AI-Powered Chatbot",
+            "description": "Build an intelligent chatbot using NLP and machine learning",
+            "tags": ["AI", "NLP", "Python"]
+        },
+        {
+            "title": "Digital Library System",
+            "description": "Create a comprehensive e-library with search and recommendation features",
+            "tags": ["Web Dev", "Database", "React"]
+        },
+        {
+            "title": "Health Tracker App",
+            "description": "Track fitness goals, nutrition, and health metrics with data visualization",
+            "tags": ["Mobile", "Health", "Analytics"]
+        },
+        {
+            "title": "Smart Home Automation",
+            "description": "IoT-based system to control and monitor home devices",
+            "tags": ["IoT", "Hardware", "Cloud"]
+        },
+        {
+            "title": "Collaborative Code Editor",
+            "description": "Real-time code collaboration platform with syntax highlighting",
+            "tags": ["WebSockets", "Real-time", "Editor"]
+        }
+    ],
+    "resources": [{
+            "category": "Practice Platforms",
+            "items": [
+                { "name": "LeetCode", "url": "https://leetcode.com", "icon": "💻" },
+                { "name": "Codeforces", "url": "https://codeforces.com", "icon": "🏆" },
+                { "name": "HackerRank", "url": "https://hackerrank.com", "icon": "🎯" },
+                { "name": "GeeksforGeeks", "url": "https://geeksforgeeks.org", "icon": "📚" }
+            ]
+        },
+        {
+            "category": "Dev Tools",
+            "items": [
+                { "name": "GitHub", "url": "https://github.com", "icon": "🐙" },
+                { "name": "VS Code", "url": "https://code.visualstudio.com", "icon": "⚡" },
+                { "name": "Postman", "url": "https://postman.com", "icon": "📮" },
+                { "name": "Replit", "url": "https://replit.com", "icon": "🔧" }
+            ]
+        },
+        {
+            "category": "UI/UX Tools",
+            "items": [
+                { "name": "Figma", "url": "https://figma.com", "icon": "🎨" },
+                { "name": "Canva", "url": "https://canva.com", "icon": "✨" },
+                { "name": "Dribbble", "url": "https://dribbble.com", "icon": "🏀" }
+            ]
+        },
+        {
+            "category": "Deployment",
+            "items": [
+                { "name": "Vercel", "url": "https://vercel.com", "icon": "▲" },
+                { "name": "Netlify", "url": "https://netlify.com", "icon": "🌐" },
+                { "name": "Firebase", "url": "https://firebase.google.com", "icon": "🔥" },
+                { "name": "Heroku", "url": "https://heroku.com", "icon": "☁️" }
+            ]
+        }
+    ],
+    "tips": [{
+            "title": "5-Step Problem Solving Approach",
+            "points": [
+                "Understand the problem - Read carefully and identify inputs/outputs",
+                "Plan your approach - Think of algorithms and data structures",
+                "Write pseudocode - Outline your solution before coding",
+                "Implement the solution - Write clean, readable code",
+                "Test and optimize - Verify edge cases and improve time complexity"
+            ]
+        },
+        {
+            "title": "Common DSA Patterns",
+            "points": [
+                "Two Pointers - For array/string problems with sorted data",
+                "Sliding Window - For substring/subarray problems",
+                "Fast & Slow Pointers - For cycle detection in linked lists",
+                "Merge Intervals - For overlapping interval problems",
+                "Top K Elements - Use heaps for finding largest/smallest elements"
+            ]
+        },
+        {
+            "title": "Debugging Strategies",
+            "points": [
+                "Use print statements to track variable values",
+                "Test with small inputs first",
+                "Check boundary conditions (empty, single element, max size)",
+                "Verify your logic with pen and paper",
+                "Use debugger tools to step through code"
+            ]
+        }
+    ],
+    "roadmaps": [{
+            "title": "DSA Mastery Path",
+            "description": "From beginner to advanced competitive programmer",
+            "milestones": [
+                { "name": "Basic Data Structures", "progress": 100 },
+                { "name": "Sorting & Searching", "progress": 80 },
+                { "name": "Dynamic Programming", "progress": 60 },
+                { "name": "Graph Algorithms", "progress": 40 },
+                { "name": "Advanced Topics", "progress": 20 }
+            ]
+        },
+        {
+            "title": "Web Development for Hackathons",
+            "description": "Build full-stack projects quickly and efficiently",
+            "milestones": [
+                { "name": "HTML/CSS/JavaScript", "progress": 100 },
+                { "name": "React Fundamentals", "progress": 85 },
+                { "name": "Backend with Node.js", "progress": 70 },
+                { "name": "Database Integration", "progress": 55 },
+                { "name": "Deployment & DevOps", "progress": 30 }
+            ]
+        },
+        {
+            "title": "ML/AI for Beginners",
+            "description": "Start your journey in machine learning and AI",
+            "milestones": [
+                { "name": "Python Basics", "progress": 100 },
+                { "name": "NumPy & Pandas", "progress": 75 },
+                { "name": "Machine Learning Basics", "progress": 50 },
+                { "name": "Deep Learning", "progress": 25 },
+                { "name": "Real-world Projects", "progress": 10 }
+            ]
+        }
+    ]
+}

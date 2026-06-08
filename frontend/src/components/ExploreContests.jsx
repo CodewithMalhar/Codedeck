@@ -118,7 +118,7 @@ export default function ExploreContests() {
   ];
 
   return (
-    <div className='my-40'>
+    <div className='my-30'>
       <div className='flex flex-col justify-center items-center md:py-10 px-5 md:px-60 text-center'>
         <h1 className='text-4xl md:text-6xl text-white font-extrabold leading-tight'>
           <span className='bg-[#5eead4] text-[#1b1a1a] px-1'>Discover</span> the perfect coding competition for you</h1>

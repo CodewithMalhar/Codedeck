@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import GitHubContributionGraph from "../components/GitHubContributionGraph";
@@ -357,9 +358,15 @@ export default function Dashboard() {
           />
         )}
 
-        <div className="flex flex-col md:flex-row pt-24 px-10 pb-4 my-10 gap-4 md:gap-0">
-          <div className="w-full md:w-2/12 md:mr-6">
-            <div className="bg-[#1a1a1a] border border-[#2a2a2a] text-gray-300 rounded-t-xl shadow-lg px-5 py-6 flex flex-col items-center gap-4">
+        <div className="pt-24 px-6 md:px-10 pb-10 my-10 grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="w-full md:col-span-3 md:mr-0 md:sticky md:top-28 h-fit">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45 }}
+              className="bg-[#1a1a1a]/70 backdrop-blur-lg border border-[#2a2a2a] text-gray-300 rounded-t-xl shadow-[0_10px_28px_rgba(0,0,0,0.55)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.7)] ring-2 ring-[#2a2a2a]/70 hover:ring-4 hover:ring-[#5eead4]/40 transition-all duration-300 hover:-translate-y-[3px] hover:scale-[1.02] px-5 py-6 flex flex-col items-center gap-4"
+            >
 
               {/* Profile Pic */}
               <img
@@ -400,6 +407,13 @@ export default function Dashboard() {
                 color="text-yellow-200"
                 bg="bg-[#2e2a1f]"
               />
+              <SidebarAction
+                icon={<IconUser size={16} />}
+                label="View Public Profile"
+                onClick={() => navigate(`/profile/${user?._id}`)}
+                color="text-[#5eead4]"
+                bg="bg-[#1a2e2e]"
+              />
               {/* Uncomment this if you don't have logout elsewhere */}
               {/* <SidebarAction
                     icon={<IconLogout size={16} />}
@@ -411,48 +425,55 @@ export default function Dashboard() {
                     color="text-red-300"
                     bg="bg-[#2a1e1e]"
                   /> */}
-            </div>
+            </motion.div>
 
 
 
-            <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-b-xl shadow-lg px-6 py-6 space-y-4">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: 0.05 }}
+              className="bg-[#1a1a1a]/70 backdrop-blur-lg border border-[#2a2a2a] border-t-0 -mt-px rounded-b-xl rounded-t-none shadow-[0_10px_28px_rgba(0,0,0,0.55)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.7)] ring-2 ring-[#2a2a2a]/70 hover:ring-4 hover:ring-[#5eead4]/40 transition-all duration-300 px-6 py-6 space-y-4"
+            >
               <StatRow icon={<IconFlame size={22} />} label="Streak" value="0" />
               <StatRow icon={<IconCalendarCheck size={22} />} label="Active Days" value="0" />
               <StatRow icon={<IconTimelineEvent size={22} />} label="Longest Streak" value="0" />
               <StatRow icon={<IconArticle size={22} />} label="Total Blogs" value={`${user?.blogs? user?.blogs?.length : 0}`} />
               <StatRow icon={<IconEye size={22} />} label="Profile Views" value={`${user?.views? Object.keys(user?.views).length : 0}`} />
-            </div>
+            </motion.div>
 
           </div>
 
-          <div className="  w-full md:w-10/12">
-            <div className="flex md:flex-row flex-col  gap-4 md:gap-0">
-              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl w-full md:w-7/12 md:mr-2 p-6">
-                <p className="text-4xl text-[#5eead4] mb-1">
+          <div className="w-full md:col-span-9">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+              <GlowCard className="md:col-span-8 min-h-[260px]">
+                <SectionTitle icon={<IconUser size={22} className="text-[#5eead4]" />} title={greeting} subtitle="" />
+                <p className="text-4xl md:text-5xl text-[#5eead4] mb-1 font-semibold">
                   {greeting},
                 </p>
-                <p className="text-2xl md:text-5xl text-white font-bold mt-4 flex items-center gap-3">
+                <p className="text-2xl md:text-4xl text-white font-bold mt-4 flex items-center gap-3">
                   <IconUser size={36} className="text-[#5eead4]" />
                   {/* {user?.username || "Harshvardhan"} 👋 */}
                   {user?.firstname} {user?.lastname}👋
                 </p>
 
-                <span className=" flex md:w-1/3 items-center justify-center gap-2 bg-[#12342f] text-white text-xl rounded-full mt-6 px-6 py-2 border border-[#5eead4]">
+                <span className=" flex md:w-1/3 items-center justify-center gap-2 bg-[#12342f] text-white text-lg md:text-xl rounded-full mt-6 px-6 py-2 border border-[#5eead4]">
                   <IconClockHour5 size={22} />
                   {time}
                 </span>
 
 
-                <p className="mt-6 text-gray-400 italic text-lg flex items-center gap-2">
+                <p className="mt-6 text-gray-400 italic text-base md:text-lg flex items-center gap-2">
                   <IconQuote size={20} className="text-[#5eead4]" />
                   {randomQuote}
                 </p>
-              </div>
+              </GlowCard>
 
 
-              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl w-full md:w-5/12 ml-2 p-6 relative overflow-hidden">
+              <GlowCard className="md:col-span-4 min-h-[260px]">
                 <div className="mb-6">
-                  <p className="text-2xl font-semibold text-[#5eead4]">Digitomize Rank</p>
+                  <p className="text-2xl md:text-3xl font-semibold text-[#5eead4]">CodeDeck Rank</p>
                   <p className="text-3xl md:text-5xl font-bold text-white">#830</p>
                 </div>
 
@@ -484,12 +505,8 @@ export default function Dashboard() {
                         dataKey="value"
                         stroke="#5eead4"
                         strokeWidth={3}
-                        dot={{
-                          r: 4,
-                          stroke: "#1a1a1a",
-                          strokeWidth: 2,
-                          fill: "#5eead4",
-                        }}
+                        dot={{ r: 4, stroke: "#1a1a1a", strokeWidth: 2, fill: "#5eead4" }}
+                        activeDot={{ r: 6, stroke: "#5eead4", strokeWidth: 2, fill: "#0b0b0b" }}
                       />
                       {/* Gradient fill area under line */}
                       <Area
@@ -508,13 +525,13 @@ export default function Dashboard() {
                   >
                     View More Stats
                   </a> */}
-              </div>
+              </GlowCard>
 
             </div>
-            <div className="space-y-8 mt-4">
+            <div className="space-y-8 mt-6">
               {/* Row 1: Leetcode Card (Full Width) */}
-              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-lg p-6 w-full text-white overflow-auto scrollbar-hide">
-                <h2 className="text-2xl font-bold text-yellow-500 mb-3">
+              <GlowCard>
+                <h2 className="text-2xl md:text-3xl font-semibold text-yellow-500 mb-3">
                   Leetcode
                 </h2>
 
@@ -624,25 +641,25 @@ export default function Dashboard() {
                         <p className="text-xs text-gray-400">Total Solved</p>
                       </div>
                     </div>
-                    <div className="flex gap-3 mt-4 text-xs">
-                      <div className="flex items-center gap-1">
+                    <div className="flex gap-4 mt-4 text-xs bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 text-gray-200">
+                      <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full bg-green-400"></span>
-                        <p>Easy</p>
+                        <p className="whitespace-nowrap">Easy</p>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                        <p>Medium</p>
+                        <p className="whitespace-nowrap">Medium</p>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                        <p>Hard</p>
+                        <p className="whitespace-nowrap">Hard</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Contest Info Section */}
-                  <div className="bg-[#222222] border border-[#2a2a2a] rounded-lg py-6 px-4 w-1/2 text-xs text-gray-300 shadow-md">
-                    <p className="font-semibold text-lg text-yellow-500 mb-4">
+                  <div className="bg-[#222222]/80 backdrop-blur-md border border-[#2a2a2a] rounded-lg py-6 px-4 w-1/2 text-xs text-gray-300 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:shadow-[0_18px_34px_rgba(0,0,0,0.55)] transition-all duration-300">
+                    <p className="font-semibold text-lg md:text-xl text-yellow-500 mb-4">
                       Contest Stats
                     </p>
                     <div className="flex flex-col space-y-4 text-md">
@@ -667,11 +684,11 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </GlowCard>
 
               {/* Row 2: Codeforces Card */}
-              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-lg p-6 w-full overflow-auto text-white scrollbar-hide">
-                <h2 className="text-2xl font-bold text-blue-500 mb-4">
+              <GlowCard>
+                <h2 className="text-2xl md:text-3xl font-semibold text-blue-500 mb-4">
                   Codeforces
                 </h2>
 
@@ -696,8 +713,8 @@ export default function Dashboard() {
                 </div>
 
                 {/* Contest Stats */}
-                <div className="bg-[#222222] rounded-lg py-4 px-3 text-sm text-gray-300 shadow-md">
-                  <p className="font-semibold text-lg text-blue-500 mb-4">
+                <div className="bg-[#222222]/80 backdrop-blur-md rounded-lg py-4 px-3 text-sm text-gray-300 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:shadow-[0_18px_34px_rgba(0,0,0,0.55)] transition-all duration-300 border border-[#2a2a2a]">
+                  <p className="font-semibold text-lg md:text-xl text-blue-500 mb-4">
                     Contest Stats
                   </p>
                   <div className="flex flex-col space-y-4 text-md">
@@ -745,14 +762,14 @@ export default function Dashboard() {
                     ).map(([tag, count], index) => (
                       <span
                         key={index}
-                        className="bg-[#1e293b] text-blue-400 px-3 py-2 rounded-full shadow-sm"
+                        className="bg-[#1e293b] text-blue-400 px-3 py-2 rounded-full shadow-sm transition-colors duration-200 hover:bg-[#24364a]"
                       >
                         {tag} x{count}
                       </span>
                     ))}
                   </div>
                 </div>
-              </div>
+              </GlowCard>
 
               {/* Row 3: GeeksforGeeks Card */}
               {/* <div className="bg-[#1a1a1a] rounded-xl shadow-lg p-6 w-full overflow-auto text-white">
@@ -840,10 +857,39 @@ const StatRow = ({ icon, label, value }) => (
 // 👇 Component for Reusability
 const SidebarAction = ({ icon, label, onClick, color, bg }) => (
   <p
-    className={`flex items-center gap-2 justify-center w-full text-sm font-medium py-2 px-4 rounded-md cursor-pointer shadow-sm transition duration-200 hover:opacity-90 ${bg} ${color}`}
+    className={`flex items-center gap-2 justify-center w-full text-sm font-medium py-2 px-4 rounded-md cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.45)] active:translate-y-[1px] transition-all duration-200 hover:opacity-90 ${bg} ${color}`}
     onClick={onClick}
   >
     {icon}
     {label}
   </p>
+);
+
+// Futuristic glowing card with animated border and glassmorphism
+const GlowCard = ({ className = "", children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5 }}
+    className={`relative ${className}`}
+  >
+    <div className="p-[1.5px] rounded-2xl bg-gradient-to-br from-[#5eead4]/35 via-transparent to-yellow-400/25 animate-[pulse_6s_ease-in-out_infinite] h-full">
+      <div className="rounded-2xl bg-[#111111]/80 backdrop-blur-xl border border-[#2a2a2a] shadow-[0_10px_28px_rgba(0,0,0,0.55)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.7)] ring-2 ring-[#2a2a2a]/70 hover:ring-4 hover:ring-[#5eead4]/40 transition-all duration-300 hover:-translate-y-[3px] hover:scale-[1.015] p-6 h-full">
+        {children}
+      </div>
+    </div>
+  </motion.div>
+);
+
+const SectionTitle = ({ icon, title, subtitle }) => (
+  <div className="flex items-center gap-3 mb-2">
+    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#5eead4]/10 ring-1 ring-[#5eead4]/40">
+      {icon}
+    </span>
+    <div>
+      <p className="text-sm text-gray-400 tracking-wide">{subtitle}</p>
+      <h3 className="text-xl font-semibold text-white">{title}</h3>
+    </div>
+  </div>
 );

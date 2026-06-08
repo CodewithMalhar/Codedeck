@@ -4,8 +4,8 @@ const User = require('../models/User');
 const axios = require('axios')
 const crypto = require('crypto');
 const mongoose = require('mongoose')
-// Fetch User Portfolio
-exports.getUserPortfolio = async (req, res) => {
+    // Fetch User Portfolio
+exports.getUserPortfolio = async(req, res) => {
     try {
         const portfolio = await Portfolio.findOne({ user: req.user.id });
         if (!portfolio) {
@@ -17,7 +17,7 @@ exports.getUserPortfolio = async (req, res) => {
     }
 };
 // Update Portfolio (e.g., achievements, coding history)
-exports.updatePortfolio = async (req, res) => {
+exports.updatePortfolio = async(req, res) => {
     const { achievements, codingHistory } = req.body;
     try {
         const portfolio = await Portfolio.findOne({ user: req.user.id });
@@ -45,28 +45,48 @@ exports.updatePortfolio = async (req, res) => {
 // };
 
 
-exports.getLinkedAccounts = async (req, res) => {
+exports.getLinkedAccounts = async(req, res) => {
     try {
 
         const _id = req.query._id;
         console.log(_id)
-        const { lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername ,cnUsername } = await User.findById(_id).lean()
-        console.log({ lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername,cnUsername })
-        res.status(200).json({ lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername,cnUsername })
+        const { lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername, cnUsername } = await User.findById(_id).lean()
+        console.log({ lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername, cnUsername })
+        res.status(200).json({ lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername, cnUsername })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: error })
     }
 }
-exports.updateLinkedAccounts = async (req, res) => {
+exports.updateLinkedAccounts = async(req, res) => {
     try {
         const platformName = req.query.platform;
         const _id = req.query._id;
+        const { username } = req.body;
+
+        // Map of platforms to database fields
+        const validPlatforms = {
+            leetcode: "lcUsername",
+            codeforces: "cfUsername",
+            gfg: "gfgUsername",
+            codechef: "ccUsername",
+            hackerrank: "hrUsername",
+            github: "githubUsername",
+            codingninjas: "cnUsername",
+        };
+
+        // Get the field to update based on the platform
+        const fieldToUpdate = validPlatforms[platformName?.toLowerCase()];
+
+        // Validate platform
+        if (!fieldToUpdate) {
+            return res.status(400).json({ error: "Invalid platform specified" });
+        }
 
         const updatedPlatform = await User.findByIdAndUpdate(
-            _id,
-            { platform:platformName },
-            { new: true, useFindAndModify: false }
+            _id, {
+                [fieldToUpdate]: username
+            }, { new: true, useFindAndModify: false }
         ).lean();
         res.status(200).json(updatedPlatform)
     } catch (error) {
@@ -75,40 +95,47 @@ exports.updateLinkedAccounts = async (req, res) => {
     }
 }
 
-exports.getAndUpdateUserStats = async (req, res) => {
+exports.getAndUpdateUserStats = async(req, res) => {
     try {
         const _id = req.query._id;
-        let portfolioData = await Portfolilo.findById(_id)
-        // console.log(portfolioData)
+        let portfolioData = await Portfolilo.findOne({ user: _id });
 
         const currTime = new Date()
         let newStats = {}
         if (portfolioData) {
             const oldTime = portfolioData.lastUpdated;
             if ((currTime - oldTime) / 1000 / 60 > 15) {
-                const { lcUsername, cfUsername, gfgUsername } = await User.findById(_id).lean();
+                const { lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername } = await User.findById(_id).lean();
                 if (lcUsername) {
                     try {
-
-
-                        const response = await axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}`);
-                        const lcresponse2 = await axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/badges`);
-                        const lcresponse3 = await axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/solved`);
-                        const response4 = await axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/contest`);
-                        const lcprofileData = response.data;
-                        const badgesData = lcresponse2.data;
-                        const solvedProblemsData = lcresponse3.data;
-                        const contestData = response4.data;
-
-                        // Process the data and update newStats
+                        const [r1, r2, r3, r4] = await Promise.all([
+                            axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}`),
+                            axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/badges`),
+                            axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/solved`),
+                            axios.get(`https://alfa-leetcode-api.onrender.com/${lcUsername}/contest`),
+                        ]);
                         newStats.lcStats = {
-                            profileData: lcprofileData,
-                            badges: badgesData,
-                            solvedProblems: solvedProblemsData,
-                            contest: contestData
+                            profile: {
+                                name: r1.data.name,
+                                username: r1.data.username,
+                                avatar: r1.data.avatar,
+                                ranking: r1.data.ranking,
+                            },
+                            badges: r2.data,
+                            solved: {
+                                totalsolved: r3.data.solvedProblem,
+                                easy: r3.data.easySolved,
+                                medium: r3.data.mediumSolved,
+                                hard: r3.data.hardSolved,
+                            },
+                            contest: {
+                                totalattended: r4.data.contestAttend,
+                                contestRating: r4.data.contestRating,
+                                contestGlobalRanking: r4.data.contestGlobalRanking,
+                            },
                         };
                     } catch (error) {
-                        console.log("error in leetcode stats fetch", error)
+                        console.log("error in leetcode stats fetch (update)", error.message);
                     }
                 }
 
@@ -148,8 +175,8 @@ exports.getAndUpdateUserStats = async (req, res) => {
                             contest: {
                                 contestsParticipated: ratingsData.length,
                                 maxRating: Math.max(...ratingsData.map(contest => contest.newRating), 0),
-                                recentContest: ratingsData[ratingsData.length - 1]?.contestName || 'N/A',
-                                recentContestRank: ratingsData[ratingsData.length - 1]?.rank || 'N/A',
+                                recentContest: ratingsData[ratingsData.length - 1] ?.contestName || 'N/A',
+                                recentContestRank: ratingsData[ratingsData.length - 1] ?.rank || 'N/A',
                                 recentContests: recentContests
                             },
                             solved: {
@@ -171,6 +198,106 @@ exports.getAndUpdateUserStats = async (req, res) => {
                     }
 
                 }
+
+                // GeeksForGeeks stats
+                if (gfgUsername) {
+                    // GfG handles are lowercase with no spaces (e.g. 'samarthdavande')
+                    const gfgHandle = gfgUsername.trim().toLowerCase().replace(/\s+/g, '');
+                    console.log(`Fetching GfG stats for handle: '${gfgHandle}' (raw: '${gfgUsername}')`);
+                    try {
+                        const r = await axios.get(
+                            `https://gfgstatscard.vercel.app/${gfgHandle}?raw=true`,
+                            { timeout: 12000 }
+                        );
+                        const d = r.data;
+
+                        if (d && d.userHandle) {
+                            newStats.gfgStats = {
+                                profile: {
+                                    username: gfgHandle,
+                                    codingScore: d.total_score || 0,
+                                    monthlyScore: d.monthly_score || 0,
+                                    globalRank: 'N/A',
+                                    instituteRank: 'N/A',
+                                },
+                                solved: {
+                                    totalSolved: d.total_problems_solved || 0,
+                                    school: d.School || 0,
+                                    basic: d.Basic || 0,
+                                    easy: d.Easy || 0,
+                                    medium: d.Medium || 0,
+                                    hard: d.Hard || 0,
+                                }
+                            };
+                            console.log(`GfG stats fetched: ${d.total_problems_solved || 0} solved`);
+                        } else {
+                            console.log(`GfG: no data for handle '${gfgHandle}' - user may have entered full name instead of GfG handle`);
+                        }
+                    } catch (err) {
+                        console.log('Error fetching GfG stats (update):', err.message);
+                    }
+                }
+
+                // GitHub stats
+                if (githubUsername) {
+                    try {
+                        const [ghUser, ghRepos] = await Promise.all([
+                            axios.get(`https://api.github.com/users/${githubUsername}`, { timeout: 10000 }),
+                            axios.get(`https://api.github.com/users/${githubUsername}/repos?per_page=100&type=owner`, { timeout: 10000 })
+                        ]);
+                        const u = ghUser.data;
+                        const repos = ghRepos.data;
+                        const totalStars = repos.reduce((a, r) => a + (r.stargazers_count || 0), 0);
+                        const totalForks = repos.reduce((a, r) => a + (r.forks_count || 0), 0);
+                        const langMap = {};
+                        repos.forEach(r => { if (r.language) langMap[r.language] = (langMap[r.language] || 0) + 1; });
+                        const topLanguages = Object.entries(langMap).sort((a, b) => b[1] - a[1]).slice(0, 4).map(e => e[0]);
+                        newStats.githubStats = {
+                            profile: { username: u.login, name: u.name, bio: u.bio, avatar: u.avatar_url },
+                            stats: {
+                                publicRepos: u.public_repos,
+                                followers: u.followers,
+                                following: u.following,
+                                totalStars,
+                                totalForks,
+                                topLanguages,
+                            }
+                        };
+                    } catch (err) {
+                        console.log('Error fetching GitHub stats (update):', err.message);
+                    }
+                }
+
+                // CodeChef stats
+                if (ccUsername) {
+                    try {
+                        const ccRes = await axios.get(
+                            `https://codechef-api.vercel.app/handle/${ccUsername}`,
+                            { timeout: 10000 }
+                        );
+                        const d = ccRes.data;
+                        newStats.ccStats = {
+                            profile: {
+                                username: ccUsername,
+                                name: d.name || ccUsername,
+                                currentRating: d.currentRating || 0,
+                                highestRating: d.highestRating || 0,
+                                stars: d.stars || '1★',
+                                globalRank: d.globalRank || 'N/A',
+                                countryRank: d.countryRank || 'N/A',
+                            },
+                            contests: {
+                                attended: d.ratingData ? d.ratingData.length : 0,
+                                recentContests: (d.ratingData || []).slice(-5).map(c => ({
+                                    name: c.name, rating: c.rating, rank: c.rank
+                                }))
+                            }
+                        };
+                    } catch (err) {
+                        console.log('Error fetching CodeChef stats (update):', err.message);
+                    }
+                }
+
                 const {
                     codingHistory,
                     realTimeRatings,
@@ -183,20 +310,18 @@ exports.getAndUpdateUserStats = async (req, res) => {
                 newStats.achievements = achievements
                 newStats.analytics = analytics
                 newStats.contestHistory = contestHistory
-                newStats.lastUpdated = currTime
-                const updatedPortfolio = await Portfolio.findByIdAndUpdate(
-                    _id,
-                    { ...newStats },
-                    { new: true, useFindAndModify: false }
+                newStats.lastUpdated = currTime;
+                const updatedPortfolio = await Portfolio.findOneAndUpdate(
+                    { user: _id }, { ...newStats }, { new: true, useFindAndModify: false }
                 ).lean();
-                res.status(200).json(updatedPortfolio)
+                res.status(200).json(updatedPortfolio);
                 return;
             } else {
-                res.status(200).json({ data: portfolioData })
+                res.status(200).json(portfolioData)
                 return;
             }
         } else {
-            const { lcUsername, cfUsername, gfgUsername } = await User.findById(_id).lean()
+            const { lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername } = await User.findById(_id).lean()
             if (lcUsername) {
                 try {
 
@@ -275,8 +400,8 @@ exports.getAndUpdateUserStats = async (req, res) => {
                         contest: {
                             contestsParticipated: ratingsData.length,
                             maxRating: Math.max(...ratingsData.map(contest => contest.newRating), 0),
-                            recentContest: ratingsData[ratingsData.length - 1]?.contestName || 'N/A',
-                            recentContestRank: ratingsData[ratingsData.length - 1]?.rank || 'N/A',
+                            recentContest: ratingsData[ratingsData.length - 1] ?.contestName || 'N/A',
+                            recentContestRank: ratingsData[ratingsData.length - 1] ?.rank || 'N/A',
                             recentContests: recentContests
                         },
                         solved: {
@@ -297,6 +422,104 @@ exports.getAndUpdateUserStats = async (req, res) => {
 
                 }
 
+            }
+
+            // GeeksForGeeks stats
+            if (gfgUsername) {
+                const gfgHandle = gfgUsername.trim().toLowerCase().replace(/\s+/g, '');
+                console.log(`Fetching GfG stats for handle: '${gfgHandle}' (raw: '${gfgUsername}')`);
+                try {
+                    const r = await axios.get(
+                        `https://gfgstatscard.vercel.app/${gfgHandle}?raw=true`,
+                        { timeout: 12000 }
+                    );
+                    const d = r.data;
+
+                    if (d && d.userHandle) {
+                        newStats.gfgStats = {
+                            profile: {
+                                username: gfgHandle,
+                                codingScore: d.total_score || 0,
+                                monthlyScore: d.monthly_score || 0,
+                                globalRank: 'N/A',
+                                instituteRank: 'N/A',
+                            },
+                            solved: {
+                                totalSolved: d.total_problems_solved || 0,
+                                school: d.School || 0,
+                                basic: d.Basic || 0,
+                                easy: d.Easy || 0,
+                                medium: d.Medium || 0,
+                                hard: d.Hard || 0,
+                            }
+                        };
+                        console.log(`GfG stats fetched: ${d.total_problems_solved || 0} solved`);
+                    } else {
+                        console.log(`GfG: no data for handle '${gfgHandle}' - user may have entered full name instead of GfG handle`);
+                    }
+                } catch (err) {
+                    console.log('Error fetching GfG stats (create):', err.message);
+                }
+            }
+
+            // GitHub stats
+            if (githubUsername) {
+                try {
+                    const [ghUser, ghRepos] = await Promise.all([
+                        axios.get(`https://api.github.com/users/${githubUsername}`, { timeout: 10000 }),
+                        axios.get(`https://api.github.com/users/${githubUsername}/repos?per_page=100&type=owner`, { timeout: 10000 })
+                    ]);
+                    const u = ghUser.data;
+                    const repos = ghRepos.data;
+                    const totalStars = repos.reduce((a, r) => a + (r.stargazers_count || 0), 0);
+                    const totalForks = repos.reduce((a, r) => a + (r.forks_count || 0), 0);
+                    const langMap = {};
+                    repos.forEach(r => { if (r.language) langMap[r.language] = (langMap[r.language] || 0) + 1; });
+                    const topLanguages = Object.entries(langMap).sort((a, b) => b[1] - a[1]).slice(0, 4).map(e => e[0]);
+                    newStats.githubStats = {
+                        profile: { username: u.login, name: u.name, bio: u.bio, avatar: u.avatar_url },
+                        stats: {
+                            publicRepos: u.public_repos,
+                            followers: u.followers,
+                            following: u.following,
+                            totalStars,
+                            totalForks,
+                            topLanguages,
+                        }
+                    };
+                } catch (err) {
+                    console.log('Error fetching GitHub stats (create):', err.message);
+                }
+            }
+
+            // CodeChef stats
+            if (ccUsername) {
+                try {
+                    const ccRes = await axios.get(
+                        `https://codechef-api.vercel.app/handle/${ccUsername}`,
+                        { timeout: 10000 }
+                    );
+                    const d = ccRes.data;
+                    newStats.ccStats = {
+                        profile: {
+                            username: ccUsername,
+                            name: d.name || ccUsername,
+                            currentRating: d.currentRating || 0,
+                            highestRating: d.highestRating || 0,
+                            stars: d.stars || '1★',
+                            globalRank: d.globalRank || 'N/A',
+                            countryRank: d.countryRank || 'N/A',
+                        },
+                        contests: {
+                            attended: d.ratingData ? d.ratingData.length : 0,
+                            recentContests: (d.ratingData || []).slice(-5).map(c => ({
+                                name: c.name, rating: c.rating, rank: c.rank
+                            }))
+                        }
+                    };
+                } catch (err) {
+                    console.log('Error fetching CodeChef stats (create):', err.message);
+                }
             }
             const {
                 codingHistory,
@@ -362,7 +585,7 @@ const generateRandom = (userId) => {
 };
 
 
-exports.forceUpdateStats = async (req, res) => {
+exports.forceUpdateStats = async(req, res) => {
     try {
         const _id = req.query._id;
         let portfolioData = await Portfolio.findById(_id);
@@ -435,8 +658,8 @@ exports.forceUpdateStats = async (req, res) => {
                     contest: {
                         contestsParticipated: ratingsData.length,
                         maxRating: Math.max(...ratingsData.map(contest => contest.newRating), 0),
-                        recentContest: ratingsData[ratingsData.length - 1]?.contestName || 'N/A',
-                        recentContestRank: ratingsData[ratingsData.length - 1]?.rank || 'N/A',
+                        recentContest: ratingsData[ratingsData.length - 1] ?.contestName || 'N/A',
+                        recentContestRank: ratingsData[ratingsData.length - 1] ?.rank || 'N/A',
                         recentContests: recentContests
                     },
                     solved: {
@@ -461,9 +684,7 @@ exports.forceUpdateStats = async (req, res) => {
 
         newStats.lastUpdated = new Date();
         portfolioData = await Portfolio.findByIdAndUpdate(
-            _id,
-            { ...newStats },
-            { new: true, useFindAndModify: false }
+            _id, {...newStats }, { new: true, useFindAndModify: false }
         );
 
         return res.status(200).json(portfolioData);

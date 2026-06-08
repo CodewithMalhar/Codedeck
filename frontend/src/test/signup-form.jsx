@@ -7,7 +7,8 @@ import signin from "../assets/signin.svg";
 import axios from "axios";
 import { ErrorMessage, SuccessMessages } from "../components/messages";
 import { Link, useNavigate } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
+import { auth, googleProvider } from "../config/firebase";
+import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; 
 export function SignupFormDemo() {
   useEffect(() => {
@@ -33,46 +34,40 @@ export function SignupFormDemo() {
       [id]: value,
     }));
   };
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        // Extract the access_token from the tokenResponse
-        const { access_token } = tokenResponse;
-
-        console.log("got access token");
-        // Send the access_token to your backend for authentication
-        const response = await axios.post(
-          `${apiBaseUrl}/auth/google`,
-          {
-            access_token,
-          }
-        );
-
-        // Handle the response from your backend
-        if (response.data.token) {
-          console.log("hehe ifff");
-          console.log(response.data)
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user", JSON.stringify(response.data.savedUser._id));
-          setSuccess(true);
-          setTimeout(() => setSuccess(false), 2500);
-          setTimeout(() => navigate("/home"), 3000);
-        } else {
-          console.log("hehe elseee");
+  const handleGoogleSignup = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      // Get Firebase ID token
+      const idToken = await user.getIdToken();
+      
+      // Send Firebase token to backend
+      const response = await axios.post(
+        `${apiBaseUrl}/auth/firebase`,
+        {
+          idToken,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL
         }
-      } catch (error) {
-        console.error("Google login error:", error);
-        setError(true);
-        setErrorMsg("Google login failed. Please try again.");
-        setTimeout(() => setError(false), 3000);
+      );
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user._id));
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 2500);
+        setTimeout(() => navigate("/home"), 3000);
       }
-    },
-    onError: (error) => {
-      console.log(error);
-      alert("Error occurred");
-    },
-  });
-  const handleSubmit = (e) => {
+    } catch (error) {
+      console.error("Firebase Google signup error:", error);
+      setError(true);
+      setErrorMsg(error.message || "Google signup failed. Please try again.");
+      setTimeout(() => setError(false), 3000);
+    }
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
     for (let key in formData) {
       if (formData[key] === "" && key != "lastname") {
@@ -80,29 +75,49 @@ export function SignupFormDemo() {
         return;
       }
     }
-    console.log(formData);
-    axios
-      .post(`${apiBaseUrl}/users/register`, formData)
-      .then((res) => {
-        console.log(res);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.savedUser._id));
-        console.log(res.data);
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 2500);
-        setLoading(false);
-        setTimeout(() => navigate("/home"), 3000);
-        // navigate("/login");
-      })
-      .catch((err) => {
-        console.log("error cane : ", err);
-        setError(true);
-        setErrorMsg(err.response.data.message);
-        setTimeout(() => setError(false), 3000);
-        setLoading(false);
+    
+    if (formData.password !== formData.confirmpassword) {
+      setError(true);
+      setErrorMsg("Passwords do not match");
+      setTimeout(() => setError(false), 3000);
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      // Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth, 
+        formData.email, 
+        formData.password
+      );
+      
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+      
+      // Send user data to backend
+      const response = await axios.post(`${apiBaseUrl}/auth/firebase`, {
+        idToken,
+        email: user.email,
+        name: `${formData.firstname} ${formData.lastname}`.trim(),
+        firstname: formData.firstname,
+        lastname: formData.lastname
       });
 
-    console.log("Form submitted");
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user._id));
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2500);
+      setTimeout(() => navigate("/home"), 3000);
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError(true);
+      setErrorMsg(error.message || "Signup failed. Please try again.");
+      setTimeout(() => setError(false), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -211,7 +226,7 @@ export function SignupFormDemo() {
             <button
               className="relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium  bg-zinc-900 shadow-[0px_0px_1px_1px_var(--neutral-800)]"
               type="button"
-              onClick={() => login()}
+              onClick={handleGoogleSignup}
             >
               <IconBrandGoogle className="h-4 w-4 text-neutral-300" />
               <span className="text-neutral-300 text-sm">Google</span>

@@ -15,7 +15,7 @@ export default function Navbar({ className }) {
   const { user, logout } = useContext(AuthContext)
   
   return (
-    <div className={cn("fixed top-10 inset-x-0 max-w-xl mx-3 md:mx-auto z-50 rounded-full shadow-lg")}>
+    <div className={cn("fixed top-10 inset-x-0 max-w-2xl mx-3 md:mx-auto z-50 rounded-full shadow-lg")}>
       <Menu setActive={setActive}>
         {/* Desktop: show text, Mobile: show icon */}
         <HoveredLink to="/home">
@@ -52,9 +52,13 @@ export default function Navbar({ className }) {
           </div>
         </MenuItem>
 
-        <HoveredLink to="/contest">
+        <HoveredLink to="/contest"> 
           <span className="hidden md:inline">Contests</span>
           <span className="md:hidden flex justify-center items-center text-lg"><FaTrophy /></span>
+        </HoveredLink>
+        <HoveredLink to="/preparation">
+          <span className="hidden md:inline">Preparation</span>
+          <span className="md:hidden flex justify-center items-center text-lg">🎯</span>
         </HoveredLink>
         <HoveredLink to="/blogs">
           <span className="hidden md:inline">Blogs</span>
@@ -64,7 +68,8 @@ export default function Navbar({ className }) {
           user && localStorage.getItem("user") ? (
             <MenuItemLogo setActive={setActive}  active={active} item={user.profileUrl}>
               <div className="felx- flex-col space-y-3 mr-20 md:mr-0 text-sm">
-                <HoveredLink2 to={"/profile"}>Your Profile</HoveredLink2>
+                <HoveredLink2 to={"/profile"}>Dashboard</HoveredLink2>
+                <HoveredLink2 to={`/profile/${user?._id}`}>Public Profile</HoveredLink2>
                 <HoveredLink2 to={"/contest"}>Your Contests</HoveredLink2>
                 <HoveredLink2 onClick={() => logout()}>Logout</HoveredLink2>
               </div>
@@ -82,7 +87,7 @@ export default function Navbar({ className }) {
               <span>
                 {localStorage.getItem("user") ? "Login" : "Sign in"}
               </span>
-              <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
+              <span className="absolute inset-x-0 w-1/4 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
             </button>
           )
         }

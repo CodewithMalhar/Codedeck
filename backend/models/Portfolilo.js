@@ -14,6 +14,9 @@ const portfolioSchema = new mongoose.Schema({
   gfgStats:{type :Object},
   cfStats:{type :Object},
   ccStats:{type :Object},
+  githubStats:{type :Object},
+  hrStats:{type :Object},
+  cnStats:{type :Object},
 });
 
 module.exports = mongoose.model("Portfolio", portfolioSchema);

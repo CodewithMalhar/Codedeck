@@ -27,9 +27,10 @@ export const AuthProvider = ({ children }) => {
         }
     }
     useEffect(() => {
+        initApp(); // run immediately on mount
         const intervalId = setInterval(() => initApp(), 4000);
         return () => clearInterval(intervalId);
-    }, [token1, user])
+    }, [token1])
     const logout = () => {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
