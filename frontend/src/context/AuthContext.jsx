@@ -4,26 +4,31 @@ export const AuthContext = createContext()
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [token1, setToken] = useState(localStorage.getItem('token'));
     const initApp = async () => {
         const token = localStorage.getItem('token')
-        if (token) {
-            try {
-                const res = await axios.get(`${apiBaseUrl}/users/profile`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                setUser((user) => res.data)
-            } catch (error) {
-                if(error.response.status===401){
-                    localStorage.removeItem('token')
-                    localStorage.removeItem('user')
-                    setUser(null)
+        if (!token) {
+            setUser(null);
+            setLoading(false);
+            return;
+        }
+        try {
+            const res = await axios.get(`${apiBaseUrl}/users/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-                console.log(error.message)
+            })
+            setUser(res.data)
+        } catch (error) {
+            if (error.response?.status === 401) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+                setUser(null)
             }
-
+            console.log(error.message)
+        } finally {
+            setLoading(false);
         }
     }
     useEffect(() => {
@@ -37,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null)
     }
     return (
-        <AuthContext.Provider value={{ user, logout }}>
+        <AuthContext.Provider value={{ user, logout, loading }}>
             {children}
         </AuthContext.Provider>
     )

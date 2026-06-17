@@ -33,9 +33,10 @@ import {
   IconLogout,
 } from "@tabler/icons-react";
 import LeetCodeHeatmap from "../components/LeetCodeHeatMap";
+import Loader from "../components/loader";
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; 
 export default function Dashboard() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, loading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [heatMapData, setHeatMapData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,13 +50,14 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    if (!user?._id) return;
+
     const getHeatMapData = async () => {
-      let userid = user?._id;
-      const response = await axios.get(`${apiBaseUrl}/blog/contributions/${userid}`)
+      const response = await axios.get(`${apiBaseUrl}/blog/contributions/${user._id}`)
       setHeatMapData(response.data);
     }
     getHeatMapData();
-  }, [])
+  }, [user?._id])
 
   let initdata = {
     profile: {
@@ -284,9 +286,13 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    if (!user?._id) return;
+
     const loadData = async () => {
       const response = await axios.put(
-        `${apiBaseUrl}/portfolio/getupdateportfolio?_id=${user?._id}`
+        `${apiBaseUrl}/portfolio/getupdateportfolio`,
+        null,
+        { params: { _id: user._id } }
       );
       console.log(response?.data?.lcStats);
       console.log(response?.data?.cfStats);
@@ -297,7 +303,7 @@ export default function Dashboard() {
       // getGeeksforGeeksProfile("atharvpatil73");
     };
     loadData();
-  }, []);
+  }, [user?._id]);
 
   const data = [
     { day: "Mon", value: 480 },
@@ -342,8 +348,10 @@ export default function Dashboard() {
   }, []);
 
 
-  if (user)
-    return (
+  if (loading) return <Loader />;
+  if (!user) return null;
+
+  return (
       <div className="w-full h-full">
         {isModalOpen && (
           <SettingsModal isOpen={isModalOpen} onRequestClose={closeModal} />

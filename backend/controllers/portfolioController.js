@@ -4,6 +4,10 @@ const User = require('../models/User');
 const axios = require('axios')
 const crypto = require('crypto');
 const mongoose = require('mongoose')
+
+const isValidUserId = (id) =>
+    id && id !== 'undefined' && id !== 'null' && mongoose.Types.ObjectId.isValid(id);
+
     // Fetch User Portfolio
 exports.getUserPortfolio = async(req, res) => {
     try {
@@ -49,6 +53,9 @@ exports.getLinkedAccounts = async(req, res) => {
     try {
 
         const _id = req.query._id;
+        if (!isValidUserId(_id)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
         console.log(_id)
         const { lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername, cnUsername } = await User.findById(_id).lean()
         console.log({ lcUsername, cfUsername, gfgUsername, githubUsername, ccUsername, hrUsername, cnUsername })
@@ -62,6 +69,9 @@ exports.updateLinkedAccounts = async(req, res) => {
     try {
         const platformName = req.query.platform;
         const _id = req.query._id;
+        if (!isValidUserId(_id)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
         const { username } = req.body;
 
         // Map of platforms to database fields
@@ -98,6 +108,9 @@ exports.updateLinkedAccounts = async(req, res) => {
 exports.getAndUpdateUserStats = async(req, res) => {
     try {
         const _id = req.query._id;
+        if (!isValidUserId(_id)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
         let portfolioData = await Portfolilo.findOne({ user: _id });
 
         const currTime = new Date()
@@ -588,6 +601,9 @@ const generateRandom = (userId) => {
 exports.forceUpdateStats = async(req, res) => {
     try {
         const _id = req.query._id;
+        if (!isValidUserId(_id)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
         let portfolioData = await Portfolio.findById(_id);
 
         if (!portfolioData) {

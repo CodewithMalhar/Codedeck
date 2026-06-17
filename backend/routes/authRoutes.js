@@ -172,7 +172,7 @@ router.get("/login/success", async (req, res) => {
 
       const savedUser = await newUser.save();
       console.log(savedUser);
-      const token = jwt.sign({ userId: savedUser._id }, "secret", {
+      const token = jwt.sign({ userId: savedUser._id }, process.env.SESSION_SECRET, {
         expiresIn: "4h",
       });
       res

@@ -27,7 +27,7 @@ exports.registerUser = async (req, res) => {
 
     const savedUser = await newUser.save();
     console.log(savedUser);
-    const token = jwt.sign({ userId: savedUser._id }, "secret", {
+    const token = jwt.sign({ userId: savedUser._id }, process.env.SESSION_SECRET, {
       expiresIn: "4h",
     });
     res
@@ -66,7 +66,7 @@ exports.loginUser = async (req, res) => {
     }
     user = await User.findOne({ email }).select("-password");
 
-    const token = jwt.sign({ userId: user._id }, "secret", { expiresIn: "4h" });
+    const token = jwt.sign({ userId: user._id }, process.env.SESSION_SECRET, { expiresIn: "4h" });
     res.status(200).json({ token, user });
   } catch (error) {
     console.log(error);

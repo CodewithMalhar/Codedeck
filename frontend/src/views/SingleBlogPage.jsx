@@ -26,6 +26,7 @@ function SingleBlogPage() {
         });
     };
     const handleLike = async () => {
+        if (!user?._id) return;
         try {
             const response = await axios.get(`${apiBaseUrl}/blog/updateLike`, {
                 params: {

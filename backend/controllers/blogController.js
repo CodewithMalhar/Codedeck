@@ -1,6 +1,7 @@
 const Blog = require('../models/Blog')
 const Comment = require('../models/Comments')
 const User = require('../models/User')
+const mongoose = require('mongoose')
 const { uploadOnCloudinary, deleteOnCloudinary } = require('./cloudnary')
 
 exports.createBlog = async (req, res) => {
@@ -209,6 +210,9 @@ exports.deleteComment = async (req, res) => {
 
 exports.getUserContributions = async (req, res) => {
     const userId = req.params.userId;
+    if (!userId || userId === 'undefined' || userId === 'null' || !mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+    }
     try {
         const user = await User.findById(userId).populate('blogs'); // Populate the blogs
 

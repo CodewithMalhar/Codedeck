@@ -7,16 +7,18 @@ const LinkModal = ({ isOpen, onRequestClose }) => {
     const [platformLists, setPlatformLists]=useState({})
     const {user}=useContext(AuthContext)
     useEffect(()=>{
+        if (!user?._id) return;
+
         const update=async()=>{
-            console.log(user?._id);
-            
-            const res=await axios.get(`${apiBaseUrl}/portfolio/linkedaccounts?_id=${user?._id}`)
+            const res=await axios.get(`${apiBaseUrl}/portfolio/linkedaccounts`, {
+                params: { _id: user._id }
+            })
 
             console.log(res.data)
             setPlatformLists(res.data)
         }
         update()
-    },[])
+    },[user?._id])
     const logoMap = {
         "Leetcode": "https://img.icons8.com/external-tal-revivo-shadow-tal-revivo/24/external-level-up-your-coding-skills-and-quickly-land-a-job-logo-shadow-tal-revivo.png",
         "Codeforces": "https://img.icons8.com/external-tal-revivo-filled-tal-revivo/24/external-codeforces-programming-competitions-and-contests-programming-community-logo-filled-tal-revivo.png",
@@ -42,10 +44,12 @@ const LinkModal = ({ isOpen, onRequestClose }) => {
 
 
   const handleConfirmUnlink = async () => {
+    if (!user?._id) return;
     try {
       // Make the DELETE request to unlink the account
       const response = await axios.delete(
-        `${apiBaseUrl}/users/unlinkAccount?_id=${user?._id}&platform=${currentPlatform}`
+        `${apiBaseUrl}/users/unlinkAccount`,
+        { params: { _id: user._id, platform: currentPlatform } }
       );
   
       // Log the success message
@@ -93,17 +97,17 @@ const LinkModal = ({ isOpen, onRequestClose }) => {
   };
 
   const handleSave = async () => {
+    if (!user?._id) return;
     const key = platformKeyMap[selectedPlatform]; // Get the key for the selected platform
     const platformName = selectedPlatform.toLowerCase(); // Platform name in lowercase
-    const userId = user?._id; // Dynamic user ID
+    const userId = user._id;
   
     try {
       // API call to link accounts
       await axios.post(
-        `${apiBaseUrl}/users/linkAccounts?_id=${userId}&platform=${platformName}`,
-        {
-          username: inputValue, // Send the username in the body
-        }
+        `${apiBaseUrl}/users/linkAccounts`,
+        { username: inputValue },
+        { params: { _id: userId, platform: platformName } }
       );
   
       // Update the local state
